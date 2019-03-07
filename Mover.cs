@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Mover : MonoBehaviour
 {
-    public Waypoint[] wayPoints;
+    //public Waypoint[] wayPoints;
     public float speed = 3f;
     public bool isCircular;
     // Always true at the beginning because the moving object will always move towards the first waypoint
@@ -13,7 +13,10 @@ public class Mover : MonoBehaviour
     private int currentIndex = 0;
     private bool isWaiting = false;
     private float speedStorage = 0;
-
+    private Vector3[] waypoints;
+    private Vector2 waypoint2;
+    private Vector2 waypoint3;
+    int index = 0;
 
 
     /**
@@ -22,11 +25,15 @@ public class Mover : MonoBehaviour
 	 */
     void Start()
     {
-        
-        if (wayPoints.Length > 0)
-        {
-            currentWaypoint = wayPoints[0];
-        }
+        waypoints = new Vector3[3];
+        waypoints[0] = new Vector3(this.transform.position.x, this.transform.position.y - 4.0f, 0.0f);
+        waypoints[1] = new Vector3(this.transform.position.x + 3.0f, this.transform.position.y, 0.0f);
+        waypoints[2] = new Vector3(this.transform.position.x - 3.0f, this.transform.position.y, 0.0f);
+
+        //if (wayPoints.Length > 0)
+        //{
+        //    currentWaypoint = wayPoints[0];
+        //}
     }
 
 
@@ -37,10 +44,25 @@ public class Mover : MonoBehaviour
 	 */
     void Update()
     {
-        if (currentWaypoint != null && !isWaiting)
+        if(this.transform.position != waypoints[index])
         {
-            MoveTowardsWaypoint();
+            this.transform.position = Vector3.MoveTowards(this.transform.position, waypoints[index], 0.06f);
         }
+        else
+        {
+            if (index == waypoints.Length-1)
+            {
+                index = 0;
+            }
+            else
+            {
+                index++;
+            }
+        }
+        //if (currentWaypoint != null && !isWaiting)
+        //{
+        //    MoveTowardsWaypoint();
+        //}
     }
 
 
@@ -62,52 +84,52 @@ public class Mover : MonoBehaviour
 	 */
     private void MoveTowardsWaypoint()
     {
-        // Get the moving objects current position
-        Vector3 currentPosition = this.transform.position;
+        //// Get the moving objects current position
+        //Vector3 currentPosition = this.transform.position;
 
-        // Get the target waypoints position
-        Vector3 targetPosition = currentWaypoint.transform.position;
+        //// Get the target waypoints position
+        //Vector3 targetPosition = currentWaypoint.transform.position;
 
-        // If the moving object isn't that close to the waypoint
-        if (Vector3.Distance(currentPosition, targetPosition) > .1f)
-        {
+        //// If the moving object isn't that close to the waypoint
+        //if (Vector3.Distance(currentPosition, targetPosition) > .1f)
+        //{
 
-            // Get the direction and normalize
-            Vector3 directionOfTravel = targetPosition - currentPosition;
-            directionOfTravel.Normalize();
+        //    // Get the direction and normalize
+        //    Vector3 directionOfTravel = targetPosition - currentPosition;
+        //    directionOfTravel.Normalize();
 
-            //scale the movement on each axis by the directionOfTravel vector components
-            this.transform.Translate(
-                directionOfTravel.x * speed * Time.deltaTime,
-                directionOfTravel.y * speed * Time.deltaTime,
-                directionOfTravel.z * speed * Time.deltaTime,
-                Space.World
-            );
-        }
-        else
-        {
+        //    //scale the movement on each axis by the directionOfTravel vector components
+        //    this.transform.Translate(
+        //        directionOfTravel.x * speed * Time.deltaTime,
+        //        directionOfTravel.y * speed * Time.deltaTime,
+        //        directionOfTravel.z * speed * Time.deltaTime,
+        //        Space.World
+        //    );
+        //}
+        //else
+        //{
 
-            // If the waypoint has a pause amount then wait a bit
-            if (currentWaypoint.waitSeconds > 0)
-            {
-                Pause();
-                Invoke("Pause", currentWaypoint.waitSeconds);
-            }
+        //    // If the waypoint has a pause amount then wait a bit
+        //    if (currentWaypoint.waitSeconds > 0)
+        //    {
+        //        Pause();
+        //        Invoke("Pause", currentWaypoint.waitSeconds);
+        //    }
 
-            // If the current waypoint has a speed change then change to it
-            if (currentWaypoint.speedOut > 0)
-            {
-                speedStorage = speed;
-                speed = currentWaypoint.speedOut;
-            }
-            else if (speedStorage != 0)
-            {
-                speed = speedStorage;
-                speedStorage = 0;
-            }
+        //    // If the current waypoint has a speed change then change to it
+        //    if (currentWaypoint.speedOut > 0)
+        //    {
+        //        speedStorage = speed;
+        //        speed = currentWaypoint.speedOut;
+        //    }
+        //    else if (speedStorage != 0)
+        //    {
+        //        speed = speedStorage;
+        //        speedStorage = 0;
+        //    }
 
-            NextWaypoint();
-        }
+        //    NextWaypoint();
+        //}
     }
 
 
@@ -118,31 +140,31 @@ public class Mover : MonoBehaviour
 	 */
     private void NextWaypoint()
     {
-        if (isCircular)
-        {
+    //    if (isCircular)
+    //    {
 
-            if (!inReverse)
-            {
-                currentIndex = (currentIndex + 1 >= wayPoints.Length) ? 0 : currentIndex + 1;
-            }
-            else
-            {
-                currentIndex = (currentIndex == 0) ? wayPoints.Length - 1 : currentIndex - 1;
-            }
+    //        if (!inReverse)
+    //        {
+    //            currentIndex = (currentIndex + 1 >= wayPoints.Length) ? 0 : currentIndex + 1;
+    //        }
+    //        else
+    //        {
+    //            currentIndex = (currentIndex == 0) ? wayPoints.Length - 1 : currentIndex - 1;
+    //        }
 
-        }
-        else
-        {
+    //    }
+    //    else
+    //    {
 
-            // If at the start or the end then reverse
-            if ((!inReverse && currentIndex + 1 >= wayPoints.Length) || (inReverse && currentIndex == 0))
-            {
-                inReverse = !inReverse;
-            }
-            currentIndex = (!inReverse) ? currentIndex + 1 : currentIndex - 1;
+    //        // If at the start or the end then reverse
+    //        if ((!inReverse && currentIndex + 1 >= wayPoints.Length) || (inReverse && currentIndex == 0))
+    //        {
+    //            inReverse = !inReverse;
+    //        }
+    //        currentIndex = (!inReverse) ? currentIndex + 1 : currentIndex - 1;
 
-        }
+    //    }
 
-        currentWaypoint = wayPoints[currentIndex];
+    //    currentWaypoint = wayPoints[currentIndex];
     }
 }
